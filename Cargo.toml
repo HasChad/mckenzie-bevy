@@ -1,0 +1,36 @@
+[package]
+name = "mckenzie-bevy"
+version = "0.1.0"
+edition = "2021"
+authors = ["HasChad"]
+
+[dependencies]
+bevy = { version = "0.14.0", default-features = false, features = [
+  # Bevy functionality:
+  "multi_threaded",     # Run with multithreading
+  "bevy_asset",         # Assets management
+  "bevy_scene",         # Scenes management
+  "bevy_winit",         # Window management (cross-platform Winit backend)
+  "bevy_render",        # Rendering framework core
+  "bevy_core_pipeline", # Common rendering abstractions
+  "bevy_sprite",        # 2D (sprites) rendering
+  "bevy_state",
+  "bevy_pbr",           # 3D (physically-based) rendering
+  "bevy_gltf",          # GLTF 3D assets format support
+  "tonemapping_luts",   # Support different camera Tonemapping modes (enables KTX2+zstd)
+
+  "png",    # PNG image format for simple 2D images
+
+  # Non-default features:
+  # Development/Debug features:
+  "dynamic_linking",   # Dynamic linking for faster compile-times
+] }
+bevy-inspector-egui = "0.25.0"
+rand = "0.8.5"
+color-eyre = "0.6.3"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
