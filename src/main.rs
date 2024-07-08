@@ -27,7 +27,7 @@ struct Cube {
 impl Default for Cube {
     fn default() -> Self {
         Cube {
-            rotate_timer: Timer::from_seconds(3.0, TimerMode::Once),
+            rotate_timer: Timer::from_seconds(1.0, TimerMode::Once),
             random_look_x: 0.0,
             random_look_y: 0.0,
         }
@@ -201,29 +201,18 @@ fn happy_cube_update(
 
                 cube_rot_x = cube_rot_x.lerp((mousepos_y / 20.0).to_radians(), percentage_complete);
                 cube_rot_y = cube_rot_y.lerp((mousepos_x / 20.0).to_radians(), percentage_complete);
-
-                cube_transform.rotation = Quat::from_axis_angle(Vec3::Y, cube_rot_y)
-                    * Quat::from_axis_angle(Vec3::X, cube_rot_x);
             } else {
-                cube_transform.rotation =
-                    Quat::from_axis_angle(Vec3::Y, (mousepos_x / 20.0).to_radians())
-                        * Quat::from_axis_angle(Vec3::X, (mousepos_y / 20.0).to_radians())
-                        * Quat::from_axis_angle(Vec3::Z, 0.0);
+                cube_rot_x = (mousepos_y / 20.0).to_radians();
+                cube_rot_y = (mousepos_x / 20.0).to_radians();
             }
+
+            cube_transform.rotation = Quat::from_euler(EulerRot::YXZ, cube_rot_y, cube_rot_x, 0.0);
         }
         None => {
-            cube_prop.rotate_timer.reset();
-            cube_prop.random_look_x = -cube_rot_x;
-            cube_prop.random_look_y = if cube_rot_y < 0. {
-                cube_rot_y + PI
-            } else {
-                cube_rot_y - PI
-            };
-
-            info!("cube random y = {}", cube_prop.random_look_y);
-            info!("cube random x = {}", cube_prop.random_look_x);
-
             next_state.set(CubeState::Sad);
+            cube_prop.rotate_timer.reset();
+            cube_prop.random_look_y = PI + cube_rot_y;
+            cube_prop.random_look_x = -cube_rot_x;
         }
     }
 }
@@ -250,17 +239,13 @@ fn sad_cube_update(
                 cube_rot_y = cube_rot_y.lerp(cube_prop.random_look_y, percentage_complete);
                 cube_rot_x = cube_rot_x.lerp(cube_prop.random_look_x, percentage_complete);
 
-                cube_transform.rotation = Quat::from_axis_angle(Vec3::Y, cube_rot_y)
-                    * Quat::from_axis_angle(Vec3::X, cube_rot_x);
+                cube_transform.rotation =
+                    Quat::from_euler(EulerRot::YXZ, cube_rot_y, cube_rot_x, 0.0);
             } else {
-                if rng.gen_bool(0.5) {
-                    cube_prop.random_look_y = rng.gen_range(2.6..PI);
-                } else {
-                    cube_prop.random_look_y = rng.gen_range(-PI..-2.6);
-                }
+                cube_prop.random_look_y = rng.gen_range(2.6..3.6);
                 cube_prop.random_look_x = rng.gen_range(-0.3..0.3);
                 cube_prop.rotate_timer =
-                    Timer::from_seconds(rng.gen_range(0.5..3.0), TimerMode::Once);
+                    Timer::from_seconds(rng.gen_range(0.3..1.5), TimerMode::Once);
             }
         }
         Some(_) => {
