@@ -1,5 +1,4 @@
 use bevy::{
-    math::VectorSpace,
     prelude::*,
     render::{
         camera::RenderTarget,
@@ -196,11 +195,11 @@ fn happy_cube_update(
             if !cube_prop.rotate_timer.finished() {
                 cube_prop.rotate_timer.tick(time.delta());
 
-                let percentage_complete = cube_prop.rotate_timer.elapsed_secs()
+                let t = cube_prop.rotate_timer.elapsed_secs()
                     / cube_prop.rotate_timer.duration().as_secs_f32();
 
-                cube_rot_x = cube_rot_x.lerp((mousepos_y / 20.0).to_radians(), percentage_complete);
-                cube_rot_y = cube_rot_y.lerp((mousepos_x / 20.0).to_radians(), percentage_complete);
+                cube_rot_x = cube_rot_x.lerp((mousepos_y / 20.0).to_radians(), t);
+                cube_rot_y = cube_rot_y.lerp((mousepos_x / 20.0).to_radians(), t);
             } else {
                 cube_rot_x = (mousepos_y / 20.0).to_radians();
                 cube_rot_y = (mousepos_x / 20.0).to_radians();
@@ -233,20 +232,23 @@ fn sad_cube_update(
             if !cube_prop.rotate_timer.finished() {
                 cube_prop.rotate_timer.tick(time.delta());
 
-                let percentage_complete = cube_prop.rotate_timer.elapsed_secs()
+                let t = cube_prop.rotate_timer.elapsed_secs()
                     / cube_prop.rotate_timer.duration().as_secs_f32();
 
-                cube_rot_y = cube_rot_y.lerp(cube_prop.random_look_y, percentage_complete);
-                cube_rot_x = cube_rot_x.lerp(cube_prop.random_look_x, percentage_complete);
+                if cube_rot_y < 0. {
+                    cube_rot_y += 2. * PI;
+                }
 
-                cube_transform.rotation =
-                    Quat::from_euler(EulerRot::YXZ, cube_rot_y, cube_rot_x, 0.0);
+                cube_rot_x = cube_rot_x.lerp(cube_prop.random_look_x, t);
+                cube_rot_y = cube_rot_y.lerp(cube_prop.random_look_y, t);
             } else {
                 cube_prop.random_look_y = rng.gen_range(2.6..3.6);
                 cube_prop.random_look_x = rng.gen_range(-0.3..0.3);
                 cube_prop.rotate_timer =
-                    Timer::from_seconds(rng.gen_range(0.3..1.5), TimerMode::Once);
+                    Timer::from_seconds(rng.gen_range(0.3..2.5), TimerMode::Once);
             }
+
+            cube_transform.rotation = Quat::from_euler(EulerRot::YXZ, cube_rot_y, cube_rot_x, 0.0);
         }
         Some(_) => {
             cube_prop.rotate_timer.reset();
