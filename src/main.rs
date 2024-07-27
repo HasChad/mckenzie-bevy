@@ -15,6 +15,7 @@ use std::f32::consts::PI;
 const RES_WIDTH: u32 = 640;
 const RES_HEIGHT: u32 = 360;
 
+#[derive(Component)]
 struct Cube {
     rotate_timer: Timer,
     random_look_x: f32,
