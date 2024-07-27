@@ -8,7 +8,6 @@ use bevy::{
     },
     window::{WindowMode, WindowResized},
 };
-use bevy_embedded_assets::EmbeddedAssetPlugin;
 use rand::prelude::*;
 use std::f32::consts::PI;
 

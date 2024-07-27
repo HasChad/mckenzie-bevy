@@ -20,7 +20,6 @@ bevy = { version = "0.14.0", default-features = false, features = [
   "tonemapping_luts",   # Support different camera Tonemapping modes (enables KTX2+zstd)
   "png",    # PNG image format for simple 2D images
 ] }
-bevy_embedded_assets = "0.11.0"
 rand = "0.8.5"
 
 [profile.dev]
