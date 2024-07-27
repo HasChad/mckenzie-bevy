@@ -54,7 +54,6 @@ fn main() {
                 })
                 .build(),
         )
-        .add_plugins(EmbeddedAssetPlugin::default())
         .init_state::<CubeState>()
         .insert_resource(Msaa::Off)
         //systems
