@@ -8,15 +8,13 @@ use bevy::{
     },
     window::{WindowMode, WindowResized},
 };
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use color_eyre::eyre::Result;
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use rand::prelude::*;
 use std::f32::consts::PI;
 
-const RES_WIDTH: u32 = 320;
-const RES_HEIGHT: u32 = 180;
+const RES_WIDTH: u32 = 640;
+const RES_HEIGHT: u32 = 360;
 
-#[derive(Component)]
 struct Cube {
     rotate_timer: Timer,
     random_look_x: f32,
@@ -26,7 +24,7 @@ struct Cube {
 impl Default for Cube {
     fn default() -> Self {
         Cube {
-            rotate_timer: Timer::from_seconds(1.0, TimerMode::Once),
+            rotate_timer: Timer::from_seconds(0.5, TimerMode::Once),
             random_look_x: 0.0,
             random_look_y: 0.0,
         }
@@ -40,9 +38,7 @@ enum CubeState {
     Sad,
 }
 
-fn main() -> Result<()> {
-    color_eyre::install()?;
-
+fn main() {
     App::new()
         .add_plugins(
             DefaultPlugins
@@ -51,30 +47,27 @@ fn main() -> Result<()> {
                     primary_window: Some(Window {
                         title: "McKenzie Bevy".into(),
                         mode: WindowMode::Windowed,
+                        position: WindowPosition::Centered(MonitorSelection::Primary),
                         ..default()
                     }),
                     ..default()
                 })
                 .build(),
         )
+        .add_plugins(EmbeddedAssetPlugin::default())
         .init_state::<CubeState>()
         .insert_resource(Msaa::Off)
-        //plugins
-        .add_plugins(WorldInspectorPlugin::new())
         //systems
         .add_systems(Startup, (setup, setup_camera))
         .add_systems(
             Update,
             (
                 fit_canvas,
-                //update,
                 happy_cube_update.run_if(in_state(CubeState::Happy)),
                 sad_cube_update.run_if(in_state(CubeState::Sad)),
             ),
         )
         .run();
-
-    Ok(())
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -93,7 +86,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     //point light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
-            intensity: 10_000_000.,
+            intensity: 3_000_000.,
             range: 100.,
             ..default()
         },
